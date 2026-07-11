@@ -22,6 +22,7 @@ import Settings from "./pages/Settings";
 
 // ─── New business pages ───────────────────────────────────────────────────────
 import GetOffer from "./pages/GetOffer";
+import Angebot from "./pages/Angebot";
 import Partners from "./pages/Partners";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
@@ -86,6 +87,7 @@ function Router() {
 
       {/* New business pages */}
       <Route path="/get-offer"  component={() => <FullLayout><GetOffer /></FullLayout>} />
+      <Route path="/angebot"    component={() => <Angebot />} />
       <Route path="/partners"   component={() => <FullLayout><Partners /></FullLayout>} />
       <Route path="/about"      component={() => <FullLayout><About /></FullLayout>} />
       <Route path="/faq"        component={() => <FullLayout><FAQ /></FullLayout>} />
