@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import QuickOfferModal, { OfferCategory } from "@/components/QuickOfferModal";
+import { useTranslation } from "react-i18next";
 import {
   Shield, Landmark, Zap, Smartphone, FileText, MessageCircle,
   TrendingUp, ArrowRight, ChevronRight, Bell, Car, Scale, Sparkles
@@ -47,12 +48,13 @@ function CosmicPortal() {
 export default function Home() {
   const [, navigate] = useLocation();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalCategory, setModalCategory] = useState<OfferCategory>("energy");
 
   const greeting = isAuthenticated && user?.name
-    ? `Здравей, ${user.name.split(" ")[0]}!`
-    : "Здравей!";
+    ? `${t("assistant.greeting").split("!")[0]}, ${user.name.split(" ")[0]}!`
+    : t("assistant.greeting").split("!")[0] + "!";
 
   function openOffer(cat: OfferCategory) {
     if (isAuthenticated) {
@@ -69,34 +71,34 @@ export default function Home() {
       {/* HERO */}
       <section className="flex flex-col md:flex-row items-center gap-8 mb-10 animate-fade-in-up">
         <div className="flex-1 text-center md:text-left">
-          <div className="tag-pill inline-block mb-4">Вашият дигитален асистент в Германия</div>
+          <div className="tag-pill inline-block mb-4">{t("home.badge")}</div>
           <h1 className="text-white mb-4" style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.01em" }}>
             {greeting}
             <br />
-            <span style={{ color: "var(--color-pale-mist)" }}>Управлявайте живота си</span>
+            <span style={{ color: "var(--color-pale-mist)" }}>{t("home.headline1")}</span>
             <br />
-            <span style={{ color: "var(--color-dusk-violet)" }}>в Германия лесно.</span>
+            <span style={{ color: "var(--color-dusk-violet)" }}>{t("home.headline2")}</span>
           </h1>
           <p className="mb-6" style={{ fontFamily: "var(--font-times)", fontSize: "16px", lineHeight: 1.88, color: "var(--color-pale-mist)", maxWidth: 480 }}>
-            Застраховки, банкиране, комунални услуги, документи и правна помощ — всичко на едно място, на български.
+            {t("home.subtitle")}
           </p>
           <div className="flex flex-wrap gap-3 justify-center md:justify-start">
             {isAuthenticated ? (
               <>
                 <button className="btn-pill-primary" onClick={() => navigate("/services")}>
-                  Разгледай услугите →
+                  {t("home.cta_services")}
                 </button>
                 <button
                   onClick={() => openOffer("energy")}
                   style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 20, background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.4)", color: "#f59e0b", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-nbarchitekt)" }}
                 >
-                  <Zap size={13} /> Оферта за ток
+                  <Zap size={13} /> {t("home.cta_energy")}
                 </button>
               </>
             ) : (
               <>
                 <button className="btn-pill-primary" onClick={() => navigate("/angebot")}>
-                  Получи безплатна оферта →
+                  {t("angebot.submit")}
                 </button>
                 <a href={getLoginUrl()} className="btn-ghost-nav" style={{ padding: "6px 18px", fontSize: "12px" }}>
                   Вход / Регистрация
@@ -125,10 +127,10 @@ export default function Home() {
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: 15, fontWeight: 700, color: "white", marginBottom: 4 }}>
-              Спести от сметката за ток в Германия
+              {t("home.energy_banner_title")}
             </div>
             <div style={{ fontFamily: "var(--font-times)", fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.5 }}>
-              Сравняваме оферти от водещи доставчици. Безплатно, на български, без задължение.
+              {t("home.energy_banner_sub")}
             </div>
           </div>
           <button
@@ -144,7 +146,7 @@ export default function Home() {
             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 22px rgba(245,158,11,0.5)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,158,11,0.35)"; }}
           >
-            Искам оферта →
+            {t("home.energy_banner_cta")}
           </button>
         </div>
       </section>
@@ -154,9 +156,9 @@ export default function Home() {
       {/* SERVICES GRID */}
       <section className="mb-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-white" style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "14px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>Услуги</h2>
+          <h2 className="text-white" style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "14px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("home.services_title")}</h2>
           <button onClick={() => navigate("/services")} className="flex items-center gap-1 text-xs" style={{ color: "var(--color-pale-mist)", fontFamily: "var(--font-nbarchitekt)" }}>
-            Всички <ArrowRight size={12} />
+            {t("home.services_all")} <ArrowRight size={12} />
           </button>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -185,7 +187,7 @@ export default function Home() {
 
       {/* QUICK ACTIONS */}
       <section className="mb-12">
-        <h2 className="text-white mb-4" style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "14px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>Бързи действия</h2>
+        <h2 className="text-white mb-4" style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "14px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("home.quick_actions")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {QUICK_ACTIONS.map(({ icon: Icon, label, path }, i) => (
             <button key={label} onClick={() => navigate(path)} className="frosted-panel flex items-center gap-2 px-3 py-3 text-left group animate-fade-in-up" style={{ animationDelay: `${0.3 + i * 0.06}s` }}>
