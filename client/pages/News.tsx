@@ -1,0 +1,183 @@
+import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { Calendar, Tag, ChevronRight } from "lucide-react";
+
+const CATEGORIES = [
+  { id: "all", label: "Всички" },
+  { id: "finance", label: "Финанси" },
+  { id: "legal", label: "Право" },
+  { id: "insurance", label: "Застраховки" },
+  { id: "banking", label: "Банкиране" },
+  { id: "utilities", label: "Комунални" },
+  { id: "community", label: "Общност" },
+] as const;
+
+type Category = typeof CATEGORIES[number]["id"];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  finance: "#1e3a5f",
+  legal: "#3a1e5f",
+  insurance: "#343755",
+  banking: "#2a3060",
+  utilities: "#1e4a3a",
+  community: "#4a3a1e",
+  all: "#343755",
+};
+
+function formatDate(d: Date | string) {
+  const date = new Date(d);
+  return date.toLocaleDateString("bg-BG", { day: "numeric", month: "long", year: "numeric" });
+}
+
+export default function News() {
+  const [activeCategory, setActiveCategory] = useState<Category>("all");
+
+  const { data: articles, isLoading } = trpc.news.list.useQuery({
+    category: activeCategory,
+    limit: 20,
+  });
+
+  return (
+    <div className="container py-8">
+      {/* Header */}
+      <div className="mb-6 animate-fade-in-up">
+        <div className="tag-pill inline-block mb-3">Актуално</div>
+        <h1
+          className="text-white"
+          style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: 700 }}
+        >
+          Новини и обновления
+        </h1>
+        <p
+          className="mt-2"
+          style={{ fontFamily: "var(--font-times)", fontSize: "15px", color: "var(--color-pale-mist)", lineHeight: 1.7 }}
+        >
+          Важна информация за живота на българите в Германия.
+        </p>
+      </div>
+
+      {/* Category filter */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-6 animate-fade-in-up delay-100" style={{ scrollbarWidth: "none" }}>
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => setActiveCategory(cat.id)}
+            className="flex-shrink-0 btn-ghost-nav transition-all duration-200"
+            style={{
+              background: activeCategory === cat.id ? "var(--color-dusk-violet)" : "transparent",
+              borderColor: activeCategory === cat.id ? "var(--color-dusk-violet)" : "rgba(255,255,255,0.3)",
+              color: activeCategory === cat.id ? "#fff" : "var(--color-pale-mist)",
+              padding: "4px 14px",
+              fontSize: "11px",
+            }}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Articles */}
+      {isLoading ? (
+        <div className="space-y-4">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="ghost-card animate-pulse"
+              style={{ height: 120, animationDelay: `${i * 0.1}s` }}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {(articles ?? []).map((article, i) => (
+            <article
+              key={article.id}
+              className="ghost-card group cursor-pointer animate-fade-in-up"
+              style={{ animationDelay: `${i * 0.06}s`, padding: "20px" }}
+            >
+              <div className="flex items-start gap-4">
+                {/* Color accent */}
+                <div
+                  className="w-1 flex-shrink-0 rounded-full self-stretch"
+                  style={{
+                    background: CATEGORY_COLORS[article.category] ?? "var(--color-dusk-violet)",
+                    minHeight: 60,
+                  }}
+                />
+                <div className="flex-1 min-w-0">
+                  {/* Meta */}
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <span
+                      className="tag-pill"
+                      style={{
+                        background: `${CATEGORY_COLORS[article.category] ?? "var(--color-dusk-violet)"}40`,
+                        borderColor: CATEGORY_COLORS[article.category] ?? "var(--color-dusk-violet)",
+                        fontSize: "9px",
+                      }}
+                    >
+                      <Tag size={8} className="inline mr-1" />
+                      {CATEGORIES.find(c => c.id === article.category)?.label ?? article.category}
+                    </span>
+                    {article.featured && (
+                      <span className="tag-pill" style={{ fontSize: "9px", background: "rgba(52,55,85,0.5)" }}>
+                        ★ Препоръчано
+                      </span>
+                    )}
+                    <span
+                      className="flex items-center gap-1"
+                      style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "10px", color: "var(--color-fog)" }}
+                    >
+                      <Calendar size={10} />
+                      {formatDate(article.publishedAt)}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h2
+                    className="text-white mb-2 group-hover:text-white/90 transition-colors"
+                    style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "15px", fontWeight: 700, lineHeight: 1.3 }}
+                  >
+                    {article.title}
+                  </h2>
+
+                  {/* Summary */}
+                  <p
+                    style={{ fontFamily: "var(--font-times)", fontSize: "13px", color: "var(--color-pale-mist)", lineHeight: 1.7 }}
+                  >
+                    {article.summary}
+                  </p>
+
+                  {/* Author + CTA */}
+                  <div className="flex items-center justify-between mt-3">
+                    {article.author && (
+                      <span
+                        style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "10px", color: "var(--color-fog)" }}
+                      >
+                        {article.author}
+                      </span>
+                    )}
+                    <button
+                      className="flex items-center gap-1 ml-auto"
+                      style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", color: "var(--color-pale-mist)" }}
+                    >
+                      Прочети <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+
+          {(!articles || articles.length === 0) && (
+            <div
+              className="ghost-card text-center py-12"
+              style={{ color: "var(--color-fog)", fontFamily: "var(--font-times)", fontSize: "15px" }}
+            >
+              Няма намерени статии в тази категория.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

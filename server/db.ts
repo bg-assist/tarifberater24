@@ -7,8 +7,10 @@ import {
   newsArticles,
   chatMessages,
   contracts,
+  emailVerifications,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
+import { nanoid } from "nanoid";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -327,3 +329,34 @@ const DEMO_CONTRACTS = [
     updatedAt: new Date("2024-03-01"),
   },
 ];
+
+// ============================================================
+// EMAIL VERIFICATIONS
+// ============================================================
+
+export async function createEmailVerificationToken(userId: number, email: string): Promise<string> {
+  const db = await getDb();
+  const token = nanoid(48);
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  if (!db) return token; // mock mode
+  await db.insert(emailVerifications).values({ userId, email, token, expiresAt });
+  return token;
+}
+
+export async function verifyEmailToken(token: string): Promise<{ userId: number; email: string } | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(emailVerifications).where(eq(emailVerifications.token, token)).limit(1);
+  const row = rows[0];
+  if (!row || row.verifiedAt || row.expiresAt < new Date()) return null;
+  await db.update(emailVerifications).set({ verifiedAt: new Date() }).where(eq(emailVerifications.token, token));
+  await db.update(users).set({ emailVerified: true, emailVerifiedAt: new Date() }).where(eq(users.id, row.userId));
+  return { userId: row.userId, email: row.email };
+}
+
+export async function getUserEmailVerified(userId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  const rows = await db.select({ emailVerified: users.emailVerified }).from(users).where(eq(users.id, userId)).limit(1);
+  return rows[0]?.emailVerified ?? false;
+}

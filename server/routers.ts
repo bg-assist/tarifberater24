@@ -26,7 +26,12 @@ import {
   getContractsByUser,
   getUserProfile,
   updateUserProfile,
+  createEmailVerificationToken,
+  verifyEmailToken,
+  getUserEmailVerified,
 } from "./db";
+import { sendWelcomeVerificationEmail } from "./email";
+import { TRPCError } from "@trpc/server";
 
 // ============================================================
 // ROOT ROUTER
@@ -40,6 +45,26 @@ export const appRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+    sendVerificationEmail: protectedProcedure.mutation(async ({ ctx }) => {
+      const user = ctx.user;
+      if (!user.email) throw new TRPCError({ code: "BAD_REQUEST", message: "Нямате имейл адрес." });
+      const alreadyVerified = await getUserEmailVerified(user.id);
+      if (alreadyVerified) return { success: true, alreadyVerified: true };
+      const token = await createEmailVerificationToken(user.id, user.email);
+      await sendWelcomeVerificationEmail({ to: user.email, name: user.name ?? "Потребител", verifyToken: token });
+      return { success: true, alreadyVerified: false };
+    }),
+    verifyEmail: publicProcedure
+      .input(z.object({ token: z.string().min(1) }))
+      .mutation(async ({ input }) => {
+        const result = await verifyEmailToken(input.token);
+        if (!result) throw new TRPCError({ code: "BAD_REQUEST", message: "Невалиден или изтекъл линк." });
+        return { success: true, email: result.email };
+      }),
+    emailVerified: protectedProcedure.query(async ({ ctx }) => {
+      const verified = await getUserEmailVerified(ctx.user.id);
+      return { verified };
     }),
   }),
 
@@ -277,6 +302,39 @@ export const appRouter = router({
           console.error("[CRM] Non-fatal sync error:", err);
         }
 
+        return { success: true };
+      }),
+
+    quickOffer: protectedProcedure
+      .input(z.object({
+        category: z.enum(["insurance","energy","internet","mobile","banking","tax","legal","relocation","other"]),
+        details: z.string().max(2000).optional(),
+        urgency: z.enum(["sofort","diese_woche","diesen_monat","kein_eile"]).default("diesen_monat"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = ctx.user;
+        const nameParts = (user.name ?? "Потребител").split(" ");
+        const firstName = nameParts[0] ?? "Потребител";
+        const lastName = nameParts.slice(1).join(" ") || "-";
+        await createLead({
+          firstName,
+          lastName,
+          email: user.email ?? "",
+          phone: "",
+          city: "",
+          category: input.category,
+          details: input.details,
+          urgency: input.urgency,
+          gdprConsent: true,
+          affiliateConsent: false,
+          status: "new",
+          source: "quick_offer",
+        });
+        try {
+          await submitLeadToCrm({ firstName, lastName, email: user.email ?? "", phone: "", city: "", category: input.category, details: input.details, urgency: input.urgency, affiliateConsent: false });
+        } catch (err) {
+          console.error("[CRM] quickOffer sync error:", err);
+        }
         return { success: true };
       }),
   }),
