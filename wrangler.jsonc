@@ -1,11 +1,14 @@
 {
-  // Cloudflare Workers configuration for Tarifberater24
+  // Cloudflare Pages / Workers Sites configuration for Tarifberater24
+  // Deploys the static site from dist/public instead of attempting to bundle server-side Node code.
   "name": "tarifberater24",
-  "main": "dist/index.js",
-  "compatibility_date": "2024-12-16",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_date": "2026-07-12",
 
-  // Environment configuration
+  "site": {
+    "bucket": "dist/public"
+  },
+
+  // Environment configuration (kept from original)
   "env": {
     "production": {
       "name": "tarifberater24-prod",
@@ -42,18 +45,16 @@
     }
   },
 
-  // Build configuration
+  // Build configuration: still run the project's CF build script which creates dist/public
   "build": {
     "command": "pnpm run build:cf",
     "cwd": "."
   },
 
-  // Observability
   "observability": {
     "enabled": true
   },
 
-  // Limits
   "limits": {
     "cpu_milliseconds": 50000
   }
