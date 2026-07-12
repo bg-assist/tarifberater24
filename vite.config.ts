@@ -141,7 +141,7 @@ if (INCLUDE_CLOUDFLARE_PLUGIN) {
 }
 
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH || "/tarifberater24/",
+  base: process.env.VITE_BASE_PATH || "/",
   plugins: basePlugins,
   resolve: {
     alias: {

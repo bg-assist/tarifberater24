@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Mail, Phone, MapPin, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 export default function Contact() {
   const [, navigate] = useLocation();
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+
+  const submitMutation = trpc.leads.submit.useMutation({
+    onSuccess: () => setSubmitted(true),
+  });
 
   useEffect(() => {
     document.title = "Kontakt | Tarifberater24";
@@ -14,12 +18,23 @@ export default function Contact() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    // Mock submission — replace with tRPC call when email integration is ready
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
+    const nameParts = form.name.trim().split(" ");
+    const firstName = nameParts[0] ?? "Kontakt";
+    const lastName = nameParts.slice(1).join(" ") || "-";
+    submitMutation.mutate({
+      firstName,
+      lastName,
+      email: form.email,
+      phone: "-",
+      city: "-",
+      category: "other",
+      details: `[${form.subject}] ${form.message}`,
+      urgency: "kein_eile",
+      affiliateConsent: false,
+    });
   }
+
+  const loading = submitMutation.isPending;
 
   const inputClass = "w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-all focus:ring-1 focus:ring-[var(--color-dusk-violet)]";
   const inputStyle = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" };
