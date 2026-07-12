@@ -97,11 +97,39 @@ export const newsArticles = mysqlTable("news_articles", {
   author: varchar("author", { length: 128 }),
   publishedAt: timestamp("publishedAt").defaultNow().notNull(),
   featured: boolean("featured").default(false).notNull(),
+  // RSS tracking for deduplication and automation
+  rssSource: varchar("rssSource", { length: 256 }), // e.g., 'tagesschau_de', 'faz_finance'
+  rssGuid: varchar("rssGuid", { length: 512 }).unique(), // RSS item GUID for deduplication
+  isTranslated: boolean("isTranslated").default(false).notNull(),
+  originalLanguage: mysqlEnum("originalLanguage", ["de", "en", "bg"]).default("de").notNull(),
+  importance: mysqlEnum("importance", ["low", "medium", "high", "critical"]).default("medium").notNull(),
+  pushNotificationSent: boolean("pushNotificationSent").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
 export type NewsArticle = typeof newsArticles.$inferSelect;
 export type InsertNewsArticle = typeof newsArticles.$inferInsert;
+
+// ============================================================
+// NEWS SOURCES (RSS configuration)
+// ============================================================
+export const newsSources = mysqlTable("news_sources", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 64 }).notNull().unique(), // e.g., 'tagesschau_de'
+  name: varchar("name", { length: 128 }).notNull(),
+  rssUrl: text("rssUrl").notNull(),
+  category: mysqlEnum("category", ["finance", "legal", "community", "insurance", "banking", "utilities", "government", "employment", "energy", "transport"]).notNull(),
+  language: mysqlEnum("language", ["de", "en"]).default("de").notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  lastFetchedAt: timestamp("lastFetchedAt"),
+  fetchIntervalMinutes: int("fetchIntervalMinutes").default(720).notNull(), // 12 hours default
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NewsSource = typeof newsSources.$inferSelect;
+export type InsertNewsSource = typeof newsSources.$inferInsert;
 
 // ============================================================
 // CHAT MESSAGES

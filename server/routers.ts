@@ -21,6 +21,7 @@ import {
   createInsuranceQuote,
   updateInsuranceQuote,
   getNewsArticles,
+  getFeaturedNews,
   getChatHistory,
   saveChatMessage,
   getContractsByUser,
@@ -180,6 +181,13 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return getNewsArticles(input.category === "all" ? undefined : input.category, input.limit);
       }),
+    featured: publicProcedure
+      .input(z.object({
+        limit: z.number().min(1).max(10).default(5),
+      }))
+      .query(async ({ input }) => {
+        return getFeaturedNews(input.limit);
+      }),
   }),
 
   // ============================================================
@@ -210,6 +218,12 @@ export const appRouter = router({
         // Save user message
         await saveChatMessage(ctx.user.id, "user", input.message);
 
+        // Fetch latest important news for context
+        const latestNews = await getFeaturedNews(3);
+        const newsContext = latestNews.length > 0
+          ? `\n\nСВЕЖИ НОВИНИ (за справка):\n${latestNews.map(n => `- ${n.title}: ${n.summary}`).join('\n')}`
+          : '';
+
         const systemPrompt = `Ти си BG Assist — AI асистент за българи, живеещи в Германия.
 Помагаш с въпроси относно:
 - Застраховки (Kfz-Versicherung, Haftpflicht, Hausrat, Krankenversicherung)
@@ -224,10 +238,10 @@ export const appRouter = router({
 Отговаряй ВИНАГИ на български език, освен ако потребителят не поиска друг език.
 Бъди конкретен, полезен и приятелски настроен.
 Когато е подходящо, давай конкретни стъпки и препоръки.
-Не давай юридически или медицински съвети — препоръчвай консултация с специалист.`;
+Не давай юридически или медицински съвети — препоръчвай консултация с специалист.${newsContext}`;
 
         const messages = [
-          { role: "system" as const, content: systemPrompt },
+          { role: "system" as const, content: systemPrompt.trim() },
           ...(input.history || []).slice(-10).map(m => ({
             role: m.role as "user" | "assistant",
             content: m.content,
@@ -235,7 +249,10 @@ export const appRouter = router({
           { role: "user" as const, content: input.message },
         ];
 
-        const response = await invokeLLM({ messages });
+        const response = await invokeLLM({
+          model: "gpt-4o",
+          messages,
+        });
         const rawContent = response?.choices?.[0]?.message?.content;
         const assistantContent: string = typeof rawContent === "string" ? rawContent : "Съжалявам, не успях да обработя заявката. Моля, опитайте отново.";
 

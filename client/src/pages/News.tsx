@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { Calendar, Tag, ChevronRight } from "lucide-react";
+import { Calendar, Tag, ChevronRight, AlertCircle, TrendingUp } from "lucide-react";
 
 const CATEGORIES = [
   { id: "all", label: "Всички" },
@@ -37,6 +37,10 @@ export default function News() {
     limit: 20,
   });
 
+  const { data: featured } = trpc.news.featured.useQuery({
+    limit: 3,
+  });
+
   return (
     <div className="container py-8">
       {/* Header */}
@@ -55,6 +59,48 @@ export default function News() {
           Важна информация за живота на българите в Германия.
         </p>
       </div>
+
+      {/* Featured articles section */}
+      {featured && featured.length > 0 && (
+        <div className="mb-8 animate-fade-in-up delay-50">
+          <div className="tag-pill inline-block mb-3" style={{ background: "rgba(255,193,7,0.2)", borderColor: "#ffc107" }}>
+            <AlertCircle size={12} className="inline mr-1" />
+            Важни новини
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {featured.map((article, i) => (
+              <div
+                key={article.id}
+                className="ghost-card p-4 border-l-4 animate-fade-in-up cursor-pointer hover:bg-opacity-80 transition-all"
+                style={{
+                  borderLeftColor: article.importance === "critical" ? "#ff6b6b" : "#ffc107",
+                  animationDelay: `${i * 0.1}s`,
+                }}
+              >
+                <div className="flex items-start gap-2 mb-2">
+                  {article.importance === "critical" && (
+                    <AlertCircle size={14} style={{ color: "#ff6b6b", flexShrink: 0 }} />
+                  )}
+                  {article.importance === "high" && (
+                    <TrendingUp size={14} style={{ color: "#ffc107", flexShrink: 0 }} />
+                  )}
+                </div>
+                <h3
+                  className="text-white mb-1"
+                  style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "13px", fontWeight: 700 }}
+                >
+                  {article.title}
+                </h3>
+                <p
+                  style={{ fontFamily: "var(--font-times)", fontSize: "12px", color: "var(--color-pale-mist)", lineHeight: 1.5 }}
+                >
+                  {article.summary.substring(0, 80)}...
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Category filter */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 animate-fade-in-up delay-100" style={{ scrollbarWidth: "none" }}>
@@ -123,6 +169,32 @@ export default function News() {
                         ★ Препоръчано
                       </span>
                     )}
+                    {article.importance && article.importance !== "medium" && (
+                      <span
+                        className="tag-pill"
+                        style={{
+                          fontSize: "9px",
+                          background:
+                            article.importance === "critical"
+                              ? "rgba(255,107,107,0.2)"
+                              : article.importance === "high"
+                                ? "rgba(255,193,7,0.2)"
+                                : "rgba(76,175,80,0.2)",
+                          borderColor:
+                            article.importance === "critical"
+                              ? "#ff6b6b"
+                              : article.importance === "high"
+                                ? "#ffc107"
+                                : "#4caf50",
+                        }}
+                      >
+                        {article.importance === "critical"
+                          ? "🔴 Критично"
+                          : article.importance === "high"
+                            ? "🟡 Важно"
+                            : "🟢 Полезно"}
+                      </span>
+                    )}
                     <span
                       className="flex items-center gap-1"
                       style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "10px", color: "var(--color-fog)" }}
@@ -156,12 +228,17 @@ export default function News() {
                         {article.author}
                       </span>
                     )}
-                    <button
-                      className="flex items-center gap-1 ml-auto"
-                      style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", color: "var(--color-pale-mist)" }}
-                    >
-                      Прочети <ChevronRight size={12} />
-                    </button>
+                    {article.sourceUrl && (
+                      <a
+                        href={article.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 ml-auto"
+                        style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", color: "var(--color-pale-mist)" }}
+                      >
+                        Прочети <ChevronRight size={12} />
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

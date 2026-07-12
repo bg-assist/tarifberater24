@@ -5,6 +5,7 @@ import {
   vehicles, InsertVehicle,
   insuranceQuotes, InsertInsuranceQuote,
   newsArticles,
+  newsSources,
   chatMessages,
   contracts,
   emailVerifications,
@@ -183,6 +184,22 @@ export async function getNewsArticles(
     return rows.length > 0 ? rows : DEMO_NEWS;
   } catch {
     return DEMO_NEWS;
+  }
+}
+
+export async function getFeaturedNews(limit = 5) {
+  const db = await getDb();
+  if (!db) return DEMO_NEWS.filter(n => n.featured).slice(0, limit);
+  try {
+    const rows = await db
+      .select()
+      .from(newsArticles)
+      .where(eq(newsArticles.featured, true))
+      .orderBy(desc(newsArticles.publishedAt))
+      .limit(limit);
+    return rows.length > 0 ? rows : DEMO_NEWS.filter(n => n.featured).slice(0, limit);
+  } catch {
+    return DEMO_NEWS.filter(n => n.featured).slice(0, limit);
   }
 }
 
