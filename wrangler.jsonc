@@ -1,7 +1,6 @@
 {
   // Cloudflare Workers configuration for Tarifberater24
   "name": "tarifberater24",
-  "type": "javascript",
   "main": "dist/index.js",
   "compatibility_date": "2024-12-16",
   "compatibility_flags": ["nodejs_compat"],
@@ -45,9 +44,8 @@
 
   // Build configuration
   "build": {
-    "command": "pnpm run build",
-    "cwd": ".",
-    "watch_paths": ["client/src/**/*.ts", "client/src/**/*.tsx", "client/src/**/*.css"]
+    "command": "pnpm run build:cf",
+    "cwd": "."
   },
 
   // Observability
@@ -58,15 +56,5 @@
   // Limits
   "limits": {
     "cpu_milliseconds": 50000
-  },
-
-  // Triggers (optional scheduled tasks)
-  "triggers": {
-    "crons": [
-      "0 */6 * * *"
-    ]
-  },
-
-  // Analytics Engine (optional)
-  "analytics_engine_datasets": ["tarifberater24_events"]
+  }
 }
