@@ -1,18 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { trpc } from "@/lib/trpc";
 import { Calendar, Tag, ChevronRight, AlertCircle, TrendingUp } from "lucide-react";
 
-const CATEGORIES = [
-  { id: "all", label: "Всички" },
-  { id: "finance", label: "Финанси" },
-  { id: "legal", label: "Право" },
-  { id: "insurance", label: "Застраховки" },
-  { id: "banking", label: "Банкиране" },
-  { id: "utilities", label: "Комунални" },
-  { id: "community", label: "Общност" },
-] as const;
+const CATEGORY_IDS = ["all", "finance", "legal", "insurance", "banking", "utilities", "community"] as const;
 
-type Category = typeof CATEGORIES[number]["id"];
+type CategoryId = typeof CATEGORY_IDS[number];
 
 const CATEGORY_COLORS: Record<string, string> = {
   finance: "#1e3a5f",
@@ -24,13 +17,31 @@ const CATEGORY_COLORS: Record<string, string> = {
   all: "#343755",
 };
 
-function formatDate(d: Date | string) {
+function formatDate(d: Date | string, locale: string) {
   const date = new Date(d);
-  return date.toLocaleDateString("bg-BG", { day: "numeric", month: "long", year: "numeric" });
+  const localeMap: Record<string, string> = {
+    bg: "bg-BG",
+    de: "de-DE",
+  };
+  return date.toLocaleDateString(localeMap[locale] || "bg-BG", { day: "numeric", month: "long", year: "numeric" });
 }
 
 export default function News() {
-  const [activeCategory, setActiveCategory] = useState<Category>("all");
+  const { t, i18n } = useTranslation();
+  const [activeCategory, setActiveCategory] = useState<CategoryId>("all");
+
+  const getCategoryLabel = (catId: CategoryId): string => {
+    const labelMap: Record<CategoryId, string> = {
+      all: t("news.all_category"),
+      finance: t("news.finance_category"),
+      legal: t("news.legal_category"),
+      insurance: t("news.insurance_category"),
+      banking: t("news.banking_category"),
+      utilities: t("news.utilities_category"),
+      community: t("news.community_category"),
+    };
+    return labelMap[catId];
+  };
 
   const { data: articles, isLoading } = trpc.news.list.useQuery({
     category: activeCategory,
@@ -45,18 +56,18 @@ export default function News() {
     <div className="container py-8">
       {/* Header */}
       <div className="mb-6 animate-fade-in-up">
-        <div className="tag-pill inline-block mb-3">Актуално</div>
+        <div className="tag-pill inline-block mb-3">{t("news.important_info")}</div>
         <h1
           className="text-white"
           style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: 700 }}
         >
-          Новини и обновления
+          {t("news.title")}
         </h1>
         <p
           className="mt-2"
           style={{ fontFamily: "var(--font-times)", fontSize: "15px", color: "var(--color-pale-mist)", lineHeight: 1.7 }}
         >
-          Важна информация за живота на българите в Германия.
+          {t("news.subtitle")}
         </p>
       </div>
 
@@ -65,7 +76,7 @@ export default function News() {
         <div className="mb-8 animate-fade-in-up delay-50">
           <div className="tag-pill inline-block mb-3" style={{ background: "rgba(255,193,7,0.2)", borderColor: "#ffc107" }}>
             <AlertCircle size={12} className="inline mr-1" />
-            Важни новини
+            {t("news.featured_label")}
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {featured.map((article, i) => (
@@ -104,20 +115,20 @@ export default function News() {
 
       {/* Category filter */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 animate-fade-in-up delay-100" style={{ scrollbarWidth: "none" }}>
-        {CATEGORIES.map(cat => (
+        {CATEGORY_IDS.map(catId => (
           <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
+            key={catId}
+            onClick={() => setActiveCategory(catId)}
             className="flex-shrink-0 btn-ghost-nav transition-all duration-200"
             style={{
-              background: activeCategory === cat.id ? "var(--color-dusk-violet)" : "transparent",
-              borderColor: activeCategory === cat.id ? "var(--color-dusk-violet)" : "rgba(255,255,255,0.3)",
-              color: activeCategory === cat.id ? "#fff" : "var(--color-pale-mist)",
+              background: activeCategory === catId ? "var(--color-dusk-violet)" : "transparent",
+              borderColor: activeCategory === catId ? "var(--color-dusk-violet)" : "rgba(255,255,255,0.3)",
+              color: activeCategory === catId ? "#fff" : "var(--color-pale-mist)",
               padding: "4px 14px",
               fontSize: "11px",
             }}
           >
-            {cat.label}
+            {getCategoryLabel(catId)}
           </button>
         ))}
       </div>
@@ -162,11 +173,11 @@ export default function News() {
                       }}
                     >
                       <Tag size={8} className="inline mr-1" />
-                      {CATEGORIES.find(c => c.id === article.category)?.label ?? article.category}
+                      {getCategoryLabel(article.category as CategoryId)}
                     </span>
                     {article.featured && (
                       <span className="tag-pill" style={{ fontSize: "9px", background: "rgba(52,55,85,0.5)" }}>
-                        ★ Препоръчано
+                        {t("news.recommended")}
                       </span>
                     )}
                     {(article as any).importance && (article as any).importance !== "medium" && (
@@ -189,10 +200,10 @@ export default function News() {
                         }}
                       >
                         {(article as any).importance === "critical"
-                          ? "🔴 Критично"
+                          ? t("news.critical_importance")
                           : (article as any).importance === "high"
-                            ? "🟡 Важно"
-                            : "🟢 Полезно"}
+                            ? t("news.high_importance")
+                            : t("news.medium_importance")}
                       </span>
                     )}
                     <span
@@ -200,7 +211,7 @@ export default function News() {
                       style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "10px", color: "var(--color-fog)" }}
                     >
                       <Calendar size={10} />
-                      {formatDate(article.publishedAt)}
+                      {formatDate(article.publishedAt, i18n.language)}
                     </span>
                   </div>
 
@@ -236,7 +247,7 @@ export default function News() {
                         className="flex items-center gap-1 ml-auto"
                         style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", color: "var(--color-pale-mist)" }}
                       >
-                        Прочети <ChevronRight size={12} />
+                        {t("news.read_more")} <ChevronRight size={12} />
                       </a>
                     )}
                   </div>
@@ -250,7 +261,7 @@ export default function News() {
               className="ghost-card text-center py-12"
               style={{ color: "var(--color-fog)", fontFamily: "var(--font-times)", fontSize: "15px" }}
             >
-              Няма намерени статии в тази категория.
+              {t("news.no_news")}
             </div>
           )}
         </div>
