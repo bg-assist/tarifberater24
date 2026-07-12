@@ -38,7 +38,7 @@ export default function Settings() {
     return (
       <button
         onClick={() => onChange(!value)}
-        className="relative w-11 h-6 rounded-full transition-all duration-200 flex-shrink-0"
+        className="premium-toggle"
         style={{
           background: value ? "var(--color-dusk-violet)" : "rgba(255,255,255,0.1)",
           border: `1px solid ${value ? "var(--color-dusk-violet)" : "var(--color-ash-border)"}`,
@@ -65,7 +65,7 @@ export default function Settings() {
   }) {
     return (
       <div
-        className="flex items-center gap-4 px-5 py-4 border-b last:border-b-0"
+        className="premium-setting-row"
         style={{ borderColor: "var(--color-ash-border)" }}
       >
         <div
@@ -95,10 +95,10 @@ export default function Settings() {
   }
 
   return (
-    <div className="container py-8 max-w-xl">
+    <main className="premium-settings-page premium-container">
       {/* Header */}
-      <div className="mb-8 animate-fade-in-up">
-        <div className="tag-pill inline-block mb-3">Конфигурация</div>
+      <div className="premium-settings-heading animate-fade-in-up">
+        <span className="premium-eyebrow">Конфигурация</span>
         <h1
           className="text-white"
           style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "clamp(20px, 4vw, 32px)", fontWeight: 700 }}
@@ -108,14 +108,14 @@ export default function Settings() {
       </div>
 
       {/* Appearance */}
-      <section className="mb-6 animate-fade-in-up delay-100">
+      <section className="premium-settings-section animate-fade-in-up delay-100">
         <h2
           className="mb-3"
           style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-fog)" }}
         >
           Изглед
         </h2>
-        <div className="ghost-card" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="premium-settings-panel">
           <SettingRow
             icon={darkMode ? Moon : Sun}
             label="Тъмен режим"
@@ -127,19 +127,19 @@ export default function Settings() {
       </section>
 
       {/* Language */}
-      <section className="mb-6 animate-fade-in-up delay-200">
+      <section className="premium-settings-section animate-fade-in-up delay-200">
         <h2
           className="mb-3"
           style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-fog)" }}
         >
           Език
         </h2>
-        <div className="ghost-card" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="premium-settings-panel">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.id}
               onClick={() => setLanguage(lang.id)}
-              className="w-full flex items-center gap-4 px-5 py-4 border-b last:border-b-0 text-left hover:bg-white/5 transition-colors"
+              className="premium-language-row"
               style={{ borderColor: "var(--color-ash-border)" }}
             >
               <span className="text-xl flex-shrink-0">{lang.flag}</span>
@@ -163,14 +163,14 @@ export default function Settings() {
       </section>
 
       {/* Notifications */}
-      <section className="mb-6 animate-fade-in-up delay-300">
+      <section className="premium-settings-section animate-fade-in-up delay-300">
         <h2
           className="mb-3"
           style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-fog)" }}
         >
           Известия
         </h2>
-        <div className="ghost-card" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="premium-settings-panel">
           <SettingRow
             icon={Bell}
             label="Push известия"
@@ -189,14 +189,14 @@ export default function Settings() {
       </section>
 
       {/* Privacy */}
-      <section className="mb-8 animate-fade-in-up delay-400">
+      <section className="premium-settings-section animate-fade-in-up delay-400">
         <h2
           className="mb-3"
           style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-fog)" }}
         >
           Поверителност
         </h2>
-        <div className="ghost-card" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="premium-settings-panel">
           <SettingRow
             icon={Shield}
             label="Споделяне на данни"
@@ -205,7 +205,7 @@ export default function Settings() {
             <ToggleSwitch value={dataSharing} onChange={setDataSharing} />
           </SettingRow>
           <button
-            className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-white/5 transition-colors"
+            className="premium-setting-row premium-setting-action"
           >
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -234,7 +234,7 @@ export default function Settings() {
       {/* Save button */}
       <button
         onClick={handleSave}
-        className="btn-pill-primary w-full py-3"
+        className="premium-button premium-submit"
         disabled={updateProfile.isPending}
         style={{ fontSize: "14px" }}
       >
@@ -248,6 +248,6 @@ export default function Settings() {
       >
         BG ASSIST GERMANY · v1.0.0 MVP · © 2025
       </p>
-    </div>
+    </main>
   );
 }

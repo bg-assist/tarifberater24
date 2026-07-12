@@ -78,7 +78,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
   return (
     <div
-      className="border-b last:border-b-0"
+      className={`premium-faq-item ${open ? "is-open" : ""}`}
       style={{ borderColor: "rgba(255,255,255,0.06)" }}
     >
       <button
@@ -107,14 +107,11 @@ export default function FAQ() {
   }, []);
 
   return (
-    <div
-      className="min-h-screen pb-20"
-      style={{ background: "var(--surface-void-canvas)", color: "var(--color-pale-mist)" }}
-    >
-      <div className="max-w-3xl mx-auto px-6 py-12">
+    <main className="premium-page premium-support-page">
+      <div className="premium-faq-shell">
 
         {/* Header */}
-        <div className="mb-10">
+        <div className="premium-support-heading">
           <div
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs mb-4"
             style={{ background: "rgba(52,55,85,0.4)", border: "1px solid rgba(52,55,85,0.6)" }}
@@ -141,7 +138,7 @@ export default function FAQ() {
                 {section.category}
               </h2>
               <div
-                className="rounded-xl overflow-hidden px-5"
+                className="premium-faq-panel"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
               >
                 {section.questions.map(item => (
@@ -154,7 +151,7 @@ export default function FAQ() {
 
         {/* Still have questions? */}
         <div
-          className="mt-10 p-6 rounded-xl text-center"
+          className="premium-support-cta"
           style={{ background: "rgba(52,55,85,0.2)", border: "1px solid rgba(52,55,85,0.4)" }}
         >
           <h3 className="text-white font-semibold mb-2">Noch Fragen?</h3>
@@ -164,14 +161,14 @@ export default function FAQ() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => navigate("/contact")}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="premium-button"
               style={{ background: "var(--color-dusk-violet)" }}
             >
               Kontakt aufnehmen <ArrowRight size={14} />
             </button>
             <button
               onClick={() => navigate("/assistant")}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm transition-opacity hover:opacity-80"
+              className="premium-button premium-button-secondary"
               style={{ background: "rgba(255,255,255,0.06)", color: "var(--color-pale-mist)" }}
             >
               AI-Assistent fragen
@@ -179,6 +176,6 @@ export default function FAQ() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

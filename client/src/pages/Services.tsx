@@ -1,148 +1,35 @@
 import { useLocation } from "wouter";
-import {
-  Shield, Landmark, Zap, Smartphone, FileText, MessageCircle,
-  Car, Home, Heart, Briefcase, Scale, GraduationCap,
-  ChevronRight
-} from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Building2, Car, FileCheck2, GraduationCap, HeartPulse, House, Landmark, Scale, ShieldCheck, Smartphone, Sparkles, Wifi, Zap } from "lucide-react";
 
-const CATEGORIES = [
-  {
-    id: "insurance",
-    title: "Застраховки",
-    tag: "Versicherungen",
-    items: [
-      { icon: Car, label: "Кфц застраховка", desc: "Kfz-Versicherung — задължителна и допълнителна", path: "/insurance" },
-      { icon: Home, label: "Домашно имущество", desc: "Hausratversicherung — защита на вещите", path: "/insurance" },
-      { icon: Heart, label: "Здравна застраховка", desc: "Krankenversicherung — GKV или PKV", path: "/insurance" },
-      { icon: Shield, label: "Лична отговорност", desc: "Haftpflichtversicherung — задължителна", path: "/insurance" },
-    ],
-  },
-  {
-    id: "banking",
-    title: "Банкиране",
-    tag: "Banking",
-    items: [
-      { icon: Landmark, label: "Банкова сметка", desc: "Girokonto — онлайн и традиционни банки", path: "/assistant" },
-      { icon: Briefcase, label: "Данъци", desc: "Steuererklärung — помощ при подаване", path: "/assistant" },
-      { icon: Scale, label: "Кредити", desc: "Kredit — сравнение на условия", path: "/assistant" },
-    ],
-  },
-  {
-    id: "utilities",
-    title: "Комунални услуги",
-    tag: "Versorgung",
-    items: [
-      { icon: Zap, label: "Електричество", desc: "Strom — сравнение на доставчици", path: "/assistant" },
-      { icon: Zap, label: "Газ", desc: "Gas — договори и цени", path: "/assistant" },
-      { icon: Smartphone, label: "Интернет", desc: "DSL / Glasfaser — най-добри оферти", path: "/assistant" },
-    ],
-  },
-  {
-    id: "telecom",
-    title: "Телекомуникации",
-    tag: "Telekommunikation",
-    items: [
-      { icon: Smartphone, label: "Мобилен договор", desc: "Handyvertrag — Telekom, Vodafone, O2", path: "/assistant" },
-      { icon: Smartphone, label: "Предплатена карта", desc: "Prepaid SIM — без договор", path: "/assistant" },
-    ],
-  },
-  {
-    id: "documents",
-    title: "Документи и бюрокрация",
-    tag: "Dokumente",
-    items: [
-      { icon: FileText, label: "Анмелдунг", desc: "Anmeldung — регистрация на адрес", path: "/assistant" },
-      { icon: FileText, label: "Разрешение за пребиваване", desc: "Aufenthaltserlaubnis — процедура", path: "/assistant" },
-      { icon: GraduationCap, label: "Признаване на дипломи", desc: "Anerkennung — процес и изисквания", path: "/assistant" },
-    ],
-  },
-  {
-    id: "legal",
-    title: "Правна помощ",
-    tag: "Rechtsberatung",
-    items: [
-      { icon: Scale, label: "Трудово право", desc: "Arbeitsrecht — права и задължения", path: "/assistant" },
-      { icon: Scale, label: "Наемно право", desc: "Mietrecht — наем, депозит, изгонване", path: "/assistant" },
-      { icon: MessageCircle, label: "AI правен съветник", desc: "Задайте въпрос на нашия асистент", path: "/assistant" },
-    ],
-  },
+const GROUPS = [
+  { number:"01", title:"Versicherungen", subtitle:"Schutz, der zu Ihrem Leben passt.", icon:ShieldCheck, items:[
+    {icon:Car,title:"Kfz-Versicherung",text:"Leistung und Beitrag unabhängig vergleichen.",path:"/insurance"},
+    {icon:House,title:"Hausrat & Haftpflicht",text:"Sachwerte und private Risiken sinnvoll absichern.",path:"/insurance"},
+    {icon:HeartPulse,title:"Gesundheit",text:"GKV, PKV und Zusatzschutz verständlich erklärt.",path:"/insurance"}]},
+  { number:"02", title:"Energie & Zuhause", subtitle:"Laufende Kosten nachhaltig optimieren.", icon:Zap, items:[
+    {icon:Zap,title:"Strom & Gas",text:"Faire Tarife passend zu Verbrauch und Region.",path:"/angebot"},
+    {icon:Wifi,title:"Internet",text:"DSL, Kabel und Glasfaser transparent vergleichen.",path:"/angebot"},
+    {icon:Smartphone,title:"Mobilfunk",text:"Datenvolumen und Netz ohne unnötige Extras.",path:"/angebot"}]},
+  { number:"03", title:"Finanzen", subtitle:"Klare Entscheidungen für Ihre finanzielle Zukunft.", icon:Landmark, items:[
+    {icon:Building2,title:"Girokonto",text:"Konten, Gebühren und Leistungen im Überblick.",path:"/assistant"},
+    {icon:BriefcaseBusiness,title:"Kredit & Finanzierung",text:"Konditionen und Gesamtkosten richtig einordnen.",path:"/assistant"},
+    {icon:Scale,title:"Steuern",text:"Digitale Orientierung für Ihre Steuerfragen.",path:"/assistant"}]},
+  { number:"04", title:"Dokumente & Recht", subtitle:"Sicher durch deutsche Prozesse und Anforderungen.", icon:FileCheck2, items:[
+    {icon:FileCheck2,title:"Anmeldung & Aufenthalt",text:"Schritte, Unterlagen und Fristen verständlich erklärt.",path:"/assistant"},
+    {icon:GraduationCap,title:"Anerkennung",text:"Abschlüsse und Qualifikationen richtig anerkennen lassen.",path:"/assistant"},
+    {icon:Scale,title:"Rechtliche Orientierung",text:"Erste Einordnung zu Arbeit, Miete und Verträgen.",path:"/assistant"}]},
 ];
 
-export default function Services() {
-  const [, navigate] = useLocation();
-
-  return (
-    <div className="container py-8">
-      {/* Header */}
-      <div className="mb-8 animate-fade-in-up">
-        <div className="tag-pill inline-block mb-3">12 категории услуги</div>
-        <h1
-          className="text-white"
-          style={{
-            fontFamily: "var(--font-nbarchitekt)",
-            fontSize: "clamp(22px, 4vw, 36px)",
-            fontWeight: 700,
-            lineHeight: 1.2,
-          }}
-        >
-          Всички услуги
-        </h1>
-        <p
-          className="mt-2"
-          style={{ fontFamily: "var(--font-times)", fontSize: "15px", color: "var(--color-pale-mist)", lineHeight: 1.7 }}
-        >
-          Намерете помощ за всяка стъпка от живота ви в Германия.
-        </p>
-      </div>
-
-      {/* Categories */}
-      {CATEGORIES.map((cat, ci) => (
-        <section key={cat.id} className="mb-10 animate-fade-in-up" style={{ animationDelay: `${ci * 0.08}s` }}>
-          <div className="flex items-center gap-3 mb-4">
-            <h2
-              className="text-white"
-              style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "13px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
-            >
-              {cat.title}
-            </h2>
-            <span className="tag-pill" style={{ fontSize: "9px" }}>{cat.tag}</span>
-          </div>
-          <div className="ghost-card" style={{ padding: 0, overflow: "hidden" }}>
-            {cat.items.map((item, ii) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={ii}
-                  onClick={() => navigate(item.path)}
-                  className="w-full flex items-center gap-4 px-5 py-4 border-b last:border-b-0 text-left hover:bg-white/5 transition-colors group"
-                  style={{ borderColor: "var(--color-ash-border)" }}
-                >
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: "rgba(52,55,85,0.3)", border: "1px solid rgba(52,55,85,0.6)" }}
-                  >
-                    <Icon size={16} color="#fff" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="text-white"
-                      style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "13px", fontWeight: 600 }}
-                    >
-                      {item.label}
-                    </div>
-                    <div
-                      style={{ fontFamily: "var(--font-times)", fontSize: "12px", color: "var(--color-smoke)" }}
-                    >
-                      {item.desc}
-                    </div>
-                  </div>
-                  <ChevronRight size={16} style={{ color: "var(--color-ash-border)", flexShrink: 0 }} className="group-hover:text-white transition-colors" />
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
+export default function Services(){
+  const [,navigate]=useLocation();
+  return <main className="premium-page premium-services-page">
+    <header className="premium-page-header"><div className="premium-container premium-page-header-grid"><div><span className="premium-eyebrow"><Sparkles size={13}/> Tarifwelten</span><h1>Komplexes verstehen.<br/><em>Richtig entscheiden.</em></h1><p>Alle wichtigen Vergleichs- und Beratungsleistungen an einem Ort — unabhängig, strukturiert und auf Ihre Situation abgestimmt.</p></div><div className="premium-header-stat"><strong>12+</strong><span>Beratungsbereiche</span><small>Eine Plattform für Ihre wichtigsten Entscheidungen in Deutschland.</small></div></div></header>
+    <section className="premium-section"><div className="premium-container premium-service-groups">
+      {GROUPS.map(group=>{const GroupIcon=group.icon;return <article className="premium-service-group" key={group.number}>
+        <div className="premium-group-heading"><span>{group.number}</span><div className="premium-icon"><GroupIcon size={23}/></div><div><h2>{group.title}</h2><p>{group.subtitle}</p></div></div>
+        <div className="premium-group-items">{group.items.map(item=>{const Icon=item.icon;return <button key={item.title} onClick={()=>navigate(item.path)}><span className="premium-icon small"><Icon size={17}/></span><div><h3>{item.title}</h3><p>{item.text}</p></div><ArrowRight size={16}/></button>})}</div>
+      </article>})}
+    </div></section>
+    <section className="premium-section premium-service-cta"><div className="premium-container"><div><span className="premium-eyebrow">Persönliche Empfehlung</span><h2>Nicht sicher, wo Sie starten sollen?</h2><p>Unser KI-Assistent analysiert Ihr Anliegen und führt Sie zum passenden nächsten Schritt.</p></div><button className="premium-button" onClick={()=>navigate("/assistant")}>Assistent starten <ArrowRight size={16}/></button></div></section>
+  </main>;
 }

@@ -98,7 +98,7 @@ export default function Angebot() {
         </div>
 
         {/* MAIN CONTENT: Category tabs + Form */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
+        <div className="angebot-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
 
           {/* LEFT: Category tabs + Benefits */}
           <div>
@@ -107,28 +107,29 @@ export default function Angebot() {
               <p style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 12, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 Избери услуга
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div className="angebot-categories" style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {CATEGORY_TABS.map(cat => {
                   const Icon = cat.icon;
                   const active = activeCategory === cat.id;
                   return (
                     <button
                       key={cat.id}
+                      className="angebot-category"
                       onClick={() => setActiveCategory(cat.id)}
                       style={{
                         display: "flex", alignItems: "center", gap: 12,
                         padding: "12px 16px", borderRadius: 12, cursor: "pointer",
-                        background: active ? "rgba(124,106,247,0.15)" : "rgba(255,255,255,0.03)",
-                        border: active ? "1px solid rgba(124,106,247,0.4)" : "1px solid rgba(255,255,255,0.06)",
+                        background: active ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.03)",
+                        border: active ? "1px solid rgba(212,175,55,0.36)" : "1px solid rgba(255,255,255,0.06)",
                         textAlign: "left", transition: "all 150ms ease-out",
                       }}
                     >
                       <div style={{
                         width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-                        background: active ? "rgba(124,106,247,0.25)" : "rgba(255,255,255,0.06)",
+                        background: active ? "rgba(212,175,55,0.18)" : "rgba(255,255,255,0.06)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                       }}>
-                        <Icon size={15} style={{ color: active ? "#a78bfa" : "rgba(255,255,255,0.4)" }} />
+                        <Icon size={15} style={{ color: active ? "var(--premium-gold-soft)" : "rgba(255,255,255,0.4)" }} />
                       </div>
                       <div>
                         <div style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "white" : "rgba(255,255,255,0.55)" }}>
@@ -171,17 +172,17 @@ export default function Angebot() {
           </div>
 
           {/* RIGHT: Form card */}
-          <div style={{
-            background: "linear-gradient(145deg, #13142e 0%, #0f1024 100%)",
-            border: "1px solid rgba(124,106,247,0.2)",
+          <div className="angebot-sticky" style={{
+            background: "linear-gradient(145deg, #11100b 0%, #0a0c0f 100%)",
+            border: "1px solid rgba(212,175,55,0.22)",
             borderRadius: 20, padding: "28px 24px",
             boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
             position: "sticky", top: 20,
           }}>
             {/* Form header */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(124,106,247,0.2)", border: "1px solid rgba(124,106,247,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <ActiveIcon size={16} style={{ color: "#a78bfa" }} />
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(212,175,55,0.15)", border: "1px solid rgba(212,175,55,0.28)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <ActiveIcon size={16} style={{ color: "var(--premium-gold-soft)" }} />
               </div>
               <div>
                 <h3 style={{ color: "white", fontWeight: 700, fontFamily: "var(--font-nbarchitekt)", fontSize: 15, margin: 0 }}>
@@ -199,8 +200,11 @@ export default function Angebot() {
       {/* Mobile sticky CTA — shown only on small screens */}
       <style>{`
         @media (max-width: 640px) {
-          .angebot-grid { grid-template-columns: 1fr !important; }
-          .angebot-sticky { position: static !important; }
+          .angebot-grid { grid-template-columns: minmax(0, 1fr) !important; }
+          .angebot-sticky { position: static !important; min-width: 0; padding: 22px 18px !important; }
+          .angebot-categories { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px !important; }
+          .angebot-category { min-width: 0; padding: 10px !important; }
+          .angebot-category > div:last-child { min-width: 0; }
         }
       `}</style>
     </div>

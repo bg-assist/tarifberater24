@@ -24,7 +24,7 @@ export default function Profile() {
 
   if (!isAuthenticated) {
     return (
-      <div className="container py-8 flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <div className="premium-page premium-auth-gate">
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
           style={{ background: "rgba(52,55,85,0.3)", border: "1px solid var(--color-dusk-violet)" }}
@@ -43,7 +43,7 @@ export default function Profile() {
         >
           Влезте в профила си, за да видите вашите данни, автомобили и договори.
         </p>
-        <a href={getLoginUrl() ?? "/"} className="btn-pill-primary">
+        <a href={getLoginUrl() ?? "/"} className="premium-button">
           Вход / Регистрация
         </a>
       </div>
@@ -51,9 +51,9 @@ export default function Profile() {
   }
 
   return (
-    <div className="container py-8">
+    <main className="premium-account-page premium-container">
       {/* User card */}
-      <div className="ghost-card mb-6 animate-fade-in-up" style={{ padding: "24px" }}>
+      <div className="premium-account-hero animate-fade-in-up">
         <div className="flex items-center gap-4">
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold flex-shrink-0"
@@ -79,7 +79,7 @@ export default function Profile() {
           </div>
           <button
             onClick={() => navigate("/settings")}
-            className="btn-ghost-nav flex items-center gap-1"
+            className="premium-button premium-button-secondary"
             style={{ padding: "6px 12px", fontSize: "10px", flexShrink: 0 }}
           >
             <Settings size={12} /> Настройки
@@ -88,7 +88,7 @@ export default function Profile() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in-up delay-100">
+      <div className="premium-account-stats animate-fade-in-up delay-100">
         {[
           { label: "Автомобили", value: vehicles?.length ?? 0, icon: Car },
           { label: "Договори", value: contracts?.length ?? 0, icon: FileText },
@@ -96,7 +96,7 @@ export default function Profile() {
         ].map(({ label, value, icon: Icon }) => (
           <div
             key={label}
-            className="ghost-card text-center"
+            className="premium-stat-card"
             style={{ padding: "16px 8px" }}
           >
             <Icon size={18} style={{ color: "var(--color-pale-mist)", margin: "0 auto 8px" }} />
@@ -116,7 +116,7 @@ export default function Profile() {
       </div>
 
       {/* Vehicles */}
-      <section className="mb-6 animate-fade-in-up delay-200">
+      <section className="premium-account-section animate-fade-in-up delay-200">
         <div className="flex items-center justify-between mb-3">
           <h2
             className="text-white"
@@ -133,7 +133,7 @@ export default function Profile() {
           </button>
         </div>
         {vehicles && vehicles.length > 0 ? (
-          <div className="ghost-card" style={{ padding: 0, overflow: "hidden" }}>
+          <div className="premium-data-panel">
             {vehicles.map((v, i) => (
               <div
                 key={v.id}
@@ -165,7 +165,7 @@ export default function Profile() {
           </div>
         ) : (
           <div
-            className="ghost-card text-center py-6"
+            className="premium-empty-state"
             style={{ color: "var(--color-fog)", fontFamily: "var(--font-times)", fontSize: "14px" }}
           >
             Нямате добавени автомобили.{" "}
@@ -180,7 +180,7 @@ export default function Profile() {
       </section>
 
       {/* Contracts */}
-      <section className="mb-6 animate-fade-in-up delay-300">
+      <section className="premium-account-section animate-fade-in-up delay-300">
         <h2
           className="text-white mb-3"
           style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "13px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}
@@ -188,7 +188,7 @@ export default function Profile() {
           Активни договори
         </h2>
         {contracts && contracts.length > 0 ? (
-          <div className="ghost-card" style={{ padding: 0, overflow: "hidden" }}>
+          <div className="premium-data-panel">
             {contracts.map((c) => (
               <div
                 key={c.id}
@@ -222,7 +222,7 @@ export default function Profile() {
           </div>
         ) : (
           <div
-            className="ghost-card text-center py-6"
+            className="premium-empty-state"
             style={{ color: "var(--color-fog)", fontFamily: "var(--font-times)", fontSize: "14px" }}
           >
             Нямате активни договори.
@@ -234,7 +234,7 @@ export default function Profile() {
       <div className="animate-fade-in-up delay-400">
         <button
           onClick={() => logout()}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border transition-all hover:bg-red-500/10"
+          className="premium-logout-button"
           style={{
             borderColor: "rgba(239,68,68,0.3)",
             color: "rgba(239,68,68,0.8)",
@@ -245,6 +245,6 @@ export default function Profile() {
           <LogOut size={16} /> Изход
         </button>
       </div>
-    </div>
+    </main>
   );
 }

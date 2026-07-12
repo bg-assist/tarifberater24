@@ -25,13 +25,11 @@ export default function Contact() {
   const inputStyle = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" };
 
   return (
-    <div
-      className="min-h-screen pb-20"
-      style={{ background: "var(--surface-void-canvas)", color: "var(--color-pale-mist)" }}
-    >
-      <div className="max-w-4xl mx-auto px-6 py-12">
+    <main className="premium-page premium-support-page">
+      <div className="premium-support-shell">
 
-        <div className="mb-10">
+        <div className="premium-support-heading">
+          <span className="premium-eyebrow">Persönlicher Support</span>
           <h1
             className="text-3xl font-bold text-white mb-2"
             style={{ fontFamily: "var(--font-nbarchitekt)" }}
@@ -48,7 +46,7 @@ export default function Contact() {
           {/* Contact info */}
           <div className="md:col-span-2 space-y-4">
             <div
-              className="p-5 rounded-xl flex items-start gap-4"
+              className="premium-contact-card"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
             >
               <div
@@ -69,7 +67,7 @@ export default function Contact() {
             </div>
 
             <div
-              className="p-5 rounded-xl flex items-start gap-4"
+              className="premium-contact-card"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
             >
               <div
@@ -90,7 +88,7 @@ export default function Contact() {
             </div>
 
             <div
-              className="p-5 rounded-xl flex items-start gap-4"
+              className="premium-contact-card"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
             >
               <div
@@ -123,7 +121,7 @@ export default function Contact() {
           <div className="md:col-span-3">
             {submitted ? (
               <div
-                className="p-8 rounded-xl text-center h-full flex flex-col items-center justify-center"
+                className="premium-contact-success"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
               >
                 <div
@@ -136,7 +134,7 @@ export default function Contact() {
                 <p className="text-sm opacity-50 mb-6">Wir melden uns innerhalb von 24 Stunden bei Ihnen.</p>
                 <button
                   onClick={() => navigate("/")}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
+                  className="premium-button"
                   style={{ background: "var(--color-dusk-violet)" }}
                 >
                   Zurück zur Startseite <ArrowRight size={14} />
@@ -145,7 +143,7 @@ export default function Contact() {
             ) : (
               <form
                 onSubmit={handleSubmit}
-                className="p-6 rounded-xl space-y-4"
+                className="premium-contact-form"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
               >
                 <div className="grid grid-cols-2 gap-3">
@@ -201,7 +199,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-6 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="premium-button premium-submit"
                   style={{ background: "var(--color-dusk-violet)" }}
                 >
                   {loading ? (
@@ -223,6 +221,6 @@ export default function Contact() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

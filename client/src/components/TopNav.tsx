@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
+import { ArrowUpRight, LogIn, Menu, ShieldCheck, Sparkles, X } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { useTranslation } from "react-i18next";
@@ -6,85 +8,74 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function TopNav() {
   const [location, navigate] = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
 
-  const NAV_ITEMS = [
+  const navItems = [
     { path: "/", label: t("nav.home") },
     { path: "/services", label: t("nav.services") },
-    { path: "/partners", label: t("nav.partner") },
     { path: "/assistant", label: t("nav.assistant") },
     { path: "/news", label: t("nav.news") },
+    { path: "/partners", label: t("nav.partner") },
   ];
 
+  const go = (path: string) => {
+    navigate(path);
+    setMobileOpen(false);
+  };
+
   return (
-    <nav className="top-nav">
-      {/* Logo */}
-      <button
-        onClick={() => navigate("/")}
-        className="flex items-center gap-2 mr-auto group"
-        aria-label="Tarifberater24"
-      >
-        <div className="w-7 h-7 rounded-full border border-[var(--color-dusk-violet)] flex items-center justify-center relative overflow-hidden animate-pulse-glow">
-          <div className="w-3 h-3 rounded-full bg-[var(--color-dusk-violet)] opacity-80" />
-          <div className="absolute inset-0 rounded-full border border-[var(--color-dusk-violet)] opacity-30 scale-150" />
-        </div>
-        <span
-          className="font-bold text-white hidden sm:block"
-          style={{ fontFamily: "var(--font-nbarchitekt)", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase" }}
-        >
-          Tarifberater24
-        </span>
-      </button>
-
-      {/* Desktop nav items */}
-      <div className="hidden md:flex items-center gap-1">
-        {NAV_ITEMS.map((item) => {
-          const isActive = location === item.path;
-          return (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className="btn-ghost-nav transition-all duration-200"
-              style={{
-                background: isActive ? "var(--color-dusk-violet)" : "transparent",
-                borderColor: isActive ? "var(--color-dusk-violet)" : "rgba(255,255,255,0.4)",
-                color: isActive ? "#fff" : "var(--color-pale-mist)",
-              }}
-            >
-              {item.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Language Switcher + CTA + Auth */}
-      <div className="ml-2 flex items-center gap-2">
-        <LanguageSwitcher />
-
-        <button
-          onClick={() => navigate("/get-offer")}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: "var(--color-dusk-violet)" }}
-        >
-          {t("nav.getOffer")}
+    <header className="premium-header">
+      <nav className="premium-nav" aria-label="Hauptnavigation">
+        <button onClick={() => go("/")} className="premium-brand" aria-label="Tarifberater24 Startseite">
+          <span className="premium-brand-mark"><ShieldCheck size={19} strokeWidth={1.7} /></span>
+          <span className="premium-brand-copy">
+            <strong>Tarifberater<span>24</span></strong>
+            <small>Unabhängig. Digital. Sicher.</small>
+          </span>
         </button>
 
-        {isAuthenticated ? (
-          <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold cursor-pointer"
-            style={{ background: "var(--color-dusk-violet)", color: "#fff" }}
-            onClick={() => navigate("/profile")}
-            title={user?.name ?? t("nav.profile")}
-          >
-            {(user?.name ?? "?")[0].toUpperCase()}
-          </div>
-        ) : (
-          <a href={getLoginUrl() ?? "/"} className="btn-ghost-nav">
-            {t("nav.login")}
-          </a>
-        )}
-      </div>
-    </nav>
+        <div className="premium-nav-links" role="list">
+          {navItems.map((item) => {
+            const active = location === item.path || (item.path !== "/" && location.startsWith(item.path));
+            return (
+              <button key={item.path} onClick={() => go(item.path)} className={active ? "is-active" : ""} aria-current={active ? "page" : undefined}>
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="premium-nav-actions">
+          <LanguageSwitcher />
+          {isAuthenticated ? (
+            <button onClick={() => go("/profile")} className="premium-avatar" title={user?.name ?? t("nav.profile")}>
+              {(user?.name ?? "?")[0].toUpperCase()}
+            </button>
+          ) : (
+            <a href={getLoginUrl() ?? "/"} className="premium-login"><LogIn size={15} />{t("nav.login")}</a>
+          )}
+          <button onClick={() => go("/get-offer")} className="premium-cta">
+            {t("nav.getOffer")}<ArrowUpRight size={15} />
+          </button>
+          <button className="premium-menu-trigger" onClick={() => setMobileOpen((open) => !open)} aria-expanded={mobileOpen} aria-label="Menü öffnen">
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+      </nav>
+
+      {mobileOpen && (
+        <div className="premium-mobile-menu">
+          <div className="premium-mobile-eyebrow"><Sparkles size={14} /> Premium Vergleichsservice</div>
+          {navItems.map((item) => (
+            <button key={item.path} onClick={() => go(item.path)} className={location === item.path ? "is-active" : ""}>
+              <span>{item.label}</span><ArrowUpRight size={17} />
+            </button>
+          ))}
+          <button onClick={() => go("/get-offer")} className="premium-mobile-cta">Kostenlos vergleichen</button>
+        </div>
+      )}
+    </header>
   );
 }

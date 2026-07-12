@@ -1,53 +1,23 @@
 import { useLocation } from "wouter";
-import { Home, Grid3X3, MessageCircle, Newspaper, User } from "lucide-react";
+import { Bot, House, LayoutGrid, Newspaper, UserRound } from "lucide-react";
 
 const NAV_ITEMS = [
-  { path: "/", label: "Начало", Icon: Home },
-  { path: "/services", label: "Услуги", Icon: Grid3X3 },
-  { path: "/assistant", label: "Асистент", Icon: MessageCircle },
-  { path: "/news", label: "Новини", Icon: Newspaper },
-  { path: "/profile", label: "Профил", Icon: User },
+  { path: "/", label: "Start", Icon: House },
+  { path: "/services", label: "Services", Icon: LayoutGrid },
+  { path: "/assistant", label: "Assistent", Icon: Bot },
+  { path: "/news", label: "News", Icon: Newspaper },
+  { path: "/profile", label: "Profil", Icon: UserRound },
 ];
 
 export default function BottomNav() {
   const [location, navigate] = useLocation();
-
   return (
-    <nav className="bottom-nav md:hidden">
+    <nav className="premium-bottom-nav md:hidden" aria-label="Mobile Navigation">
       {NAV_ITEMS.map(({ path, label, Icon }) => {
-        const isActive = location === path;
-        return (
-          <button
-            key={path}
-            onClick={() => navigate(path)}
-            className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 transition-all duration-200"
-            style={{ color: isActive ? "var(--color-ghost-white)" : "var(--color-smoke)" }}
-            aria-label={label}
-          >
-            <Icon
-              size={20}
-              strokeWidth={isActive ? 2 : 1.5}
-              style={{ color: isActive ? "var(--color-dusk-violet)" : undefined }}
-            />
-            <span
-              style={{
-                fontFamily: "var(--font-nbarchitekt)",
-                fontSize: "9px",
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-                color: isActive ? "var(--color-ghost-white)" : "var(--color-smoke)",
-              }}
-            >
-              {label}
-            </span>
-            {isActive && (
-              <span
-                className="absolute bottom-0 w-8 h-0.5 rounded-full"
-                style={{ background: "var(--color-dusk-violet)" }}
-              />
-            )}
-          </button>
-        );
+        const active = location === path || (path !== "/" && location.startsWith(path));
+        return <button key={path} onClick={()=>navigate(path)} className={active ? "is-active" : ""} aria-current={active ? "page" : undefined} aria-label={label}>
+          <span className="premium-bottom-icon"><Icon size={18} strokeWidth={active ? 2 : 1.55}/></span><small>{label}</small>
+        </button>;
       })}
     </nav>
   );

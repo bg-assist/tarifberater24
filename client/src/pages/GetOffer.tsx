@@ -57,7 +57,7 @@ const URGENCY_OPTIONS = [
 
 function ProgressBar({ step, total }: { step: number; total: number }) {
   return (
-    <div className="mb-8">
+    <div className="mb-8 premium-progress">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs opacity-50">Schritt {step} von {total}</span>
         <span className="text-xs opacity-50">{Math.round((step / total) * 100)}%</span>
@@ -140,7 +140,7 @@ export default function GetOffer() {
         email: data.email,
         phone: data.phone,
         city: data.city,
-          category: (formData.category ?? "other") as "insurance" | "energy" | "internet" | "mobile" | "banking" | "tax" | "legal" | "relocation" | "other",
+        category: (formData.category ?? "other") as "insurance" | "energy" | "internet" | "mobile" | "banking" | "tax" | "legal" | "relocation" | "documents" | "other",
         details: formData.details ?? "",
         budget: formData.budget ?? "",
         urgency: formData.urgency ?? "diesen_monat",
@@ -163,14 +163,14 @@ export default function GetOffer() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--surface-void-canvas)" }}>
-      <div className="max-w-xl mx-auto px-6 py-12">
+    <div className="premium-page premium-form-page">
+      <div className="premium-form-shell">
 
         {/* Back */}
         {currentStep < 4 && (
           <button
             onClick={() => currentStep === 1 ? navigate("/") : setCurrentStep(s => s - 1)}
-            className="flex items-center gap-2 mb-8 text-sm opacity-60 hover:opacity-100 transition-opacity"
+            className="premium-back"
             style={{ color: "var(--color-pale-mist)" }}
           >
             <ArrowLeft size={16} />
@@ -180,7 +180,8 @@ export default function GetOffer() {
 
         {/* Header */}
         {currentStep < 4 && (
-          <div className="mb-8">
+          <div className="premium-form-heading">
+            <span className="premium-eyebrow">Persönlicher Tarifvergleich</span>
             <h1
               className="text-3xl font-bold text-white mb-2"
               style={{ fontFamily: "var(--font-nbarchitekt)" }}
@@ -211,7 +212,7 @@ export default function GetOffer() {
                       key={cat.id}
                       type="button"
                       onClick={() => sv1("category", cat.id)}
-                      className="p-4 rounded-xl text-left transition-all duration-200"
+                      className="premium-option-card"
                       style={{
                         background: isSelected ? "rgba(52,55,85,0.6)" : "rgba(255,255,255,0.04)",
                         border: `1px solid ${isSelected ? "rgba(52,55,85,1)" : "rgba(255,255,255,0.08)"}`,
@@ -234,7 +235,7 @@ export default function GetOffer() {
 
             <button
               type="submit"
-              className="w-full py-3.5 px-6 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+              className="premium-button premium-submit"
               style={{ background: "var(--color-dusk-violet)" }}
             >
               Weiter <ArrowRight size={16} />
@@ -309,7 +310,7 @@ export default function GetOffer() {
 
             <button
               type="submit"
-              className="w-full py-3.5 px-6 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+              className="premium-button premium-submit"
               style={{ background: "var(--color-dusk-violet)" }}
             >
               Weiter <ArrowRight size={16} />
@@ -440,7 +441,7 @@ export default function GetOffer() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 px-6 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="premium-button premium-submit"
               style={{ background: "var(--color-dusk-violet)" }}
             >
               {isSubmitting ? (
@@ -458,7 +459,7 @@ export default function GetOffer() {
 
         {/* ── STEP 4: Success ── */}
         {currentStep === 4 && (
-          <div className="text-center py-8">
+          <div className="premium-success-state">
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
               style={{ background: "rgba(52,55,85,0.4)", border: "2px solid var(--color-dusk-violet)" }}
@@ -492,14 +493,14 @@ export default function GetOffer() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => navigate("/")}
-                className="w-full py-3 px-6 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="premium-button premium-submit"
                 style={{ background: "var(--color-dusk-violet)" }}
               >
                 Zurück zur Startseite
               </button>
               <button
                 onClick={() => navigate("/assistant")}
-                className="w-full py-3 px-6 rounded-xl text-sm transition-opacity hover:opacity-80"
+                className="premium-button premium-button-secondary"
                 style={{ background: "rgba(255,255,255,0.06)", color: "var(--color-pale-mist)" }}
               >
                 AI-Assistent fragen

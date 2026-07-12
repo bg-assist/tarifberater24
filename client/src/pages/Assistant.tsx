@@ -72,7 +72,7 @@ export default function Assistant() {
 
   if (!isAuthenticated) {
     return (
-      <div className="container py-8 flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <div className="premium-page premium-auth-gate">
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
           style={{ background: "rgba(52,55,85,0.3)", border: "1px solid var(--color-dusk-violet)" }}
@@ -91,7 +91,7 @@ export default function Assistant() {
         >
           Влезте в профила си, за да използвате AI асистента.
         </p>
-        <a href={getLoginUrl() ?? "/"} className="btn-pill-primary">
+        <a href={getLoginUrl() ?? "/"} className="premium-button">
           Вход / Регистрация
         </a>
       </div>
@@ -99,10 +99,10 @@ export default function Assistant() {
   }
 
   return (
-    <div className="flex flex-col" style={{ height: "calc(100vh - 56px - 64px)" }}>
+    <main className="premium-assistant-page">
       {/* Header */}
       <div
-        className="flex items-center justify-between px-4 py-3 border-b"
+        className="premium-assistant-header"
         style={{ borderColor: "var(--color-ash-border)", background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
       >
         <div className="flex items-center gap-2">
@@ -130,7 +130,7 @@ export default function Assistant() {
         </div>
         <button
           onClick={handleReset}
-          className="btn-ghost-nav flex items-center gap-1"
+          className="premium-assistant-reset"
           style={{ padding: "4px 10px", fontSize: "10px" }}
           title="Нов разговор"
         >
@@ -139,23 +139,23 @@ export default function Assistant() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="premium-assistant-messages">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in-up`}
+            className={`premium-message-row ${msg.role === "user" ? "is-user" : "is-assistant"} animate-fade-in-up`}
             style={{ animationDelay: "0s" }}
           >
             {msg.role === "assistant" && (
               <div
-                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mr-2 mt-1"
+                className="premium-ai-avatar"
                 style={{ background: "rgba(52,55,85,0.5)", border: "1px solid var(--color-dusk-violet)" }}
               >
                 <Sparkles size={12} style={{ color: "var(--color-pale-mist)" }} />
               </div>
             )}
             <div
-              className="max-w-[80%] rounded-xl px-4 py-3"
+              className={`premium-message-bubble ${msg.role === "user" ? "is-user" : "is-assistant"}`}
               style={{
                 background: msg.role === "user"
                   ? "var(--color-dusk-violet)"
@@ -179,7 +179,7 @@ export default function Assistant() {
         ))}
 
         {isLoading && (
-          <div className="flex justify-start animate-fade-in">
+          <div className="premium-message-row is-assistant animate-fade-in">
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mr-2 mt-1"
               style={{ background: "rgba(52,55,85,0.5)", border: "1px solid var(--color-dusk-violet)" }}
@@ -187,7 +187,7 @@ export default function Assistant() {
               <Sparkles size={12} style={{ color: "var(--color-pale-mist)" }} />
             </div>
             <div
-              className="rounded-xl px-4 py-3"
+              className="premium-message-bubble is-assistant premium-typing"
               style={{
                 background: "rgba(255,255,255,0.05)",
                 border: "1px solid var(--color-ash-border)",
@@ -215,13 +215,13 @@ export default function Assistant() {
 
       {/* Suggested prompts */}
       {messages.length <= 1 && (
-        <div className="px-4 pb-2">
+        <div className="premium-prompt-dock">
           <div className="flex flex-wrap gap-2">
             {SUGGESTED_PROMPTS.map((prompt, i) => (
               <button
                 key={i}
                 onClick={() => sendMessage(prompt)}
-                className="tag-pill cursor-pointer hover:border-white/60 transition-colors"
+                className="premium-prompt-chip"
                 style={{ fontSize: "11px", padding: "4px 10px" }}
               >
                 {prompt}
@@ -233,10 +233,10 @@ export default function Assistant() {
 
       {/* Input */}
       <div
-        className="px-4 py-3 border-t"
+        className="premium-assistant-composer"
         style={{ borderColor: "var(--color-ash-border)", background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
       >
-        <div className="flex gap-2">
+          <div className="premium-composer-row">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -248,7 +248,7 @@ export default function Assistant() {
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || isLoading}
-            className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
+            className="premium-send-button"
             style={{
               background: input.trim() ? "var(--color-dusk-violet)" : "rgba(255,255,255,0.05)",
               border: `1px solid ${input.trim() ? "var(--color-dusk-violet)" : "var(--color-ash-border)"}`,
@@ -264,6 +264,6 @@ export default function Assistant() {
           AI асистентът дава информационни отговори, не правни или медицински съвети.
         </p>
       </div>
-    </div>
+    </main>
   );
 }
