@@ -5,7 +5,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type PluginOption, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
-import { cloudflare } from "@cloudflare/vite-plugin";
 
 const PROJECT_ROOT = import.meta.dirname;
 const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
@@ -131,12 +130,14 @@ const basePlugins: PluginOption[] = [
 ];
 
 if (INCLUDE_CLOUDFLARE_PLUGIN) {
-  // cloudflare() can return a plugin or an array of plugins; normalize to array
+  // Dynamic import to avoid crashing Node <23 environments that lack
+  // the `registerHooks` export from `node:module`.
+  const { cloudflare } = await import("@cloudflare/vite-plugin");
   const cf = cloudflare();
   if (Array.isArray(cf)) {
-    basePlugins.push(...(cf as Plugin[]));
+    basePlugins.push(...(cf as PluginOption[]));
   } else {
-    basePlugins.push(cf as Plugin);
+    basePlugins.push(cf as PluginOption);
   }
 }
 
