@@ -1,0 +1,72 @@
+{
+  // Cloudflare Workers configuration for Tarifberater24
+  "name": "tarifberater24",
+  "type": "javascript",
+  "main": "dist/index.js",
+  "compatibility_date": "2024-12-16",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Environment configuration
+  "env": {
+    "production": {
+      "name": "tarifberater24-prod",
+      "routes": [
+        {
+          "pattern": "tarifberater24.de/*",
+          "zone_name": "tarifberater24.de"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production",
+        "LOG_LEVEL": "error"
+      }
+    },
+    "staging": {
+      "name": "tarifberater24-staging",
+      "routes": [
+        {
+          "pattern": "staging.tarifberater24.de/*",
+          "zone_name": "tarifberater24.de"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "LOG_LEVEL": "warn"
+      }
+    },
+    "development": {
+      "name": "tarifberater24-dev",
+      "vars": {
+        "ENVIRONMENT": "development",
+        "LOG_LEVEL": "debug"
+      }
+    }
+  },
+
+  // Build configuration
+  "build": {
+    "command": "pnpm run build",
+    "cwd": ".",
+    "watch_paths": ["client/src/**/*.ts", "client/src/**/*.tsx", "client/src/**/*.css"]
+  },
+
+  // Observability
+  "observability": {
+    "enabled": true
+  },
+
+  // Limits
+  "limits": {
+    "cpu_milliseconds": 50000
+  },
+
+  // Triggers (optional scheduled tasks)
+  "triggers": {
+    "crons": [
+      "0 */6 * * *"
+    ]
+  },
+
+  // Analytics Engine (optional)
+  "analytics_engine_datasets": ["tarifberater24_events"]
+}
