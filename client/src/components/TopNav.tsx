@@ -80,7 +80,7 @@ export default function TopNav() {
             {(user?.name ?? "?")[0].toUpperCase()}
           </div>
         ) : (
-          <a href={getLoginUrl()} className="btn-ghost-nav">
+          <a href={getLoginUrl() ?? "/"} className="btn-ghost-nav">
             {t("nav.login")}
           </a>
         )}

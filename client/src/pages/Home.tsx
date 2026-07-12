@@ -100,7 +100,7 @@ export default function Home() {
                 <button className="btn-pill-primary" onClick={() => navigate("/angebot")}>
                   {t("angebot.submit")}
                 </button>
-                <a href={getLoginUrl()} className="btn-ghost-nav" style={{ padding: "6px 18px", fontSize: "12px" }}>
+                <a href={getLoginUrl() ?? "/"} className="btn-ghost-nav" style={{ padding: "6px 18px", fontSize: "12px" }}>
                   Вход / Регистрация
                 </a>
               </>

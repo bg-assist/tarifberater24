@@ -43,7 +43,7 @@ export default function Profile() {
         >
           Влезте в профила си, за да видите вашите данни, автомобили и договори.
         </p>
-        <a href={getLoginUrl()} className="btn-pill-primary">
+        <a href={getLoginUrl() ?? "/"} className="btn-pill-primary">
           Вход / Регистрация
         </a>
       </div>

@@ -91,7 +91,7 @@ export default function Assistant() {
         >
           Влезте в профила си, за да използвате AI асистента.
         </p>
-        <a href={getLoginUrl()} className="btn-pill-primary">
+        <a href={getLoginUrl() ?? "/"} className="btn-pill-primary">
           Вход / Регистрация
         </a>
       </div>
