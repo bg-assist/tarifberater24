@@ -3,6 +3,7 @@ const bg = {
   nav: {
     home: "Начало",
     services: "Услуги",
+    hausbesitzer: "Портал на собственици",
     partner: "Партньори",
     assistant: "Асистент",
     news: "Новини",

@@ -3,6 +3,7 @@ const de = {
   nav: {
     home: "Startseite",
     services: "Leistungen",
+    hausbesitzer: "Hausbesitzer Portal",
     partner: "Partner",
     assistant: "Assistent",
     news: "Neuigkeiten",

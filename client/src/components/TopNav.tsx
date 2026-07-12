@@ -15,6 +15,7 @@ export default function TopNav() {
   const navItems = [
     { path: "/", label: t("nav.home") },
     { path: "/services", label: t("nav.services") },
+    { path: "/hausbesitzer", label: t("nav.hausbesitzer") },
     { path: "/assistant", label: t("nav.assistant") },
     { path: "/news", label: t("nav.news") },
     { path: "/partners", label: t("nav.partner") },
