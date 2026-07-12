@@ -9,11 +9,15 @@ import { eq, desc, and } from "drizzle-orm";
 
 // ─── LEADS ────────────────────────────────────────────────────────────────────
 
-export async function createLead(data: InsertLead) {
+export async function createLead(data: InsertLead): Promise<{ id: number } | null> {
   const db = await getDb();
-  if (!db) { console.warn("[DB] No connection — lead not saved"); return null; }
-  const [row] = await db.insert(leads).values(data);
-  return row;
+  if (!db) {
+    console.error("[DB] No connection — lead persistence failed");
+    return null;
+  }
+
+  const [row] = await db.insert(leads).values(data).$returningId();
+  return row ?? null;
 }
 
 export async function getLeadById(id: number) {
@@ -25,20 +29,23 @@ export async function getLeadById(id: number) {
 
 export async function updateLeadCrmSync(
   id: number,
-  hubspotContactId: string,
+  hubspotContactId?: string,
   hubspotDealId?: string
-) {
+): Promise<boolean> {
   const db = await getDb();
-  if (!db) return;
+  if (!db) return false;
+
   await db
     .update(leads)
     .set({
-      hubspotContactId,
+      hubspotContactId: hubspotContactId ?? null,
       hubspotDealId: hubspotDealId ?? null,
       crmSynced: true,
       crmSyncedAt: new Date(),
     })
     .where(eq(leads.id, id));
+
+  return true;
 }
 
 export async function updateLeadStatus(

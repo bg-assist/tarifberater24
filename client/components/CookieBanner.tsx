@@ -9,6 +9,31 @@ type ConsentState = {
 };
 
 const CONSENT_KEY = "tarifberater24_cookie_consent";
+const ANALYTICS_SCRIPT_ID = "tarifberater24-umami";
+
+function syncAnalyticsConsent(enabled: boolean) {
+  const existing = document.getElementById(ANALYTICS_SCRIPT_ID);
+  if (!enabled) {
+    existing?.remove();
+    return;
+  }
+
+  if (existing) return;
+
+  const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT?.trim();
+  const websiteId = import.meta.env.VITE_ANALYTICS_WEBSITE_ID?.trim();
+  if (!endpoint || !websiteId) {
+    console.warn("[Analytics] Consent granted, but Umami is not configured");
+    return;
+  }
+
+  const script = document.createElement("script");
+  script.id = ANALYTICS_SCRIPT_ID;
+  script.defer = true;
+  script.src = `${endpoint.replace(/\/$/, "")}/umami`;
+  script.dataset.websiteId = websiteId;
+  document.head.appendChild(script);
+}
 
 function loadConsent(): ConsentState | null {
   try {
@@ -21,7 +46,7 @@ function loadConsent(): ConsentState | null {
 
 function saveConsent(consent: ConsentState) {
   localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
-  // Dispatch event so other parts of the app can react
+  syncAnalyticsConsent(consent.analytics);
   window.dispatchEvent(new CustomEvent("cookieConsentUpdated", { detail: consent }));
 }
 
@@ -41,11 +66,14 @@ export default function CookieBanner() {
 
   useEffect(() => {
     const existing = loadConsent();
-    if (!existing) {
-      // Slight delay for better UX
-      const t = setTimeout(() => setVisible(true), 1200);
-      return () => clearTimeout(t);
+    if (existing) {
+      syncAnalyticsConsent(existing.analytics);
+      return;
     }
+
+    // Slight delay for better UX
+    const t = setTimeout(() => setVisible(true), 1200);
+    return () => clearTimeout(t);
   }, []);
 
   function acceptAll() {

@@ -147,7 +147,7 @@ export const partners = mysqlTable("partners", {
   slug: varchar("slug", { length: 64 }).notNull().unique(),
   category: mysqlEnum("category", [
     "insurance", "energy", "internet", "mobile", "banking",
-    "tax", "legal", "relocation", "other"
+    "tax", "legal", "documents", "relocation", "other"
   ]).notNull(),
   description: text("description"),
   logoUrl: text("logoUrl"),
@@ -186,7 +186,7 @@ export const leads = mysqlTable("leads", {
   // Lead details
   category: mysqlEnum("category", [
     "insurance", "energy", "internet", "mobile", "banking",
-    "tax", "legal", "relocation", "other"
+    "tax", "legal", "documents", "relocation", "other"
   ]).notNull(),
   details: text("details"),
   budget: varchar("budget", { length: 64 }),

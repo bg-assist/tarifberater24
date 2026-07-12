@@ -258,7 +258,7 @@ export const appRouter = router({
           email: z.string().email().max(320),
           phone: z.string().min(6).max(32),
           city: z.string().min(2).max(128),
-          category: z.enum(["insurance", "energy", "internet", "mobile", "banking", "tax", "legal", "relocation", "other"]),
+          category: z.enum(["insurance", "energy", "internet", "mobile", "banking", "tax", "legal", "documents", "relocation", "other"]),
           details: z.string().max(2000).optional(),
           budget: z.string().max(64).optional(),
           urgency: z.enum(["sofort", "diese_woche", "diesen_monat", "kein_eile"]),
@@ -266,8 +266,8 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        // 1. Save to DB
-        await createLead({
+        // 1. Persist the lead before any external CRM call.
+        const lead = await createLead({
           firstName: input.firstName,
           lastName: input.lastName,
           email: input.email,
@@ -283,7 +283,15 @@ export const appRouter = router({
           source: "web_form",
         });
 
-        // 2. Sync to HubSpot CRM (non-blocking — don't fail if CRM is down)
+        if (!lead) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Ihre Anfrage konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+          });
+        }
+
+        // 2. Sync to HubSpot. A failed sync stays auditable as crmSynced=false.
+        let crmSynced = false;
         try {
           const crmResult = await submitLeadToCrm({
             firstName: input.firstName,
@@ -297,17 +305,28 @@ export const appRouter = router({
             urgency: input.urgency,
             affiliateConsent: input.affiliateConsent ?? false,
           });
-          console.log(`[CRM] Lead synced via ${crmResult.mode}:`, crmResult.contactId ?? "mock");
+
+          if (crmResult.success && crmResult.mode !== "mock") {
+            crmSynced = await updateLeadCrmSync(
+              lead.id,
+              crmResult.contactId,
+              crmResult.dealId
+            );
+          }
+
+          if (!crmSynced) {
+            console.error(`[CRM] Lead ${lead.id} remains pending: ${crmResult.error ?? crmResult.mode}`);
+          }
         } catch (err) {
-          console.error("[CRM] Non-fatal sync error:", err);
+          console.error(`[CRM] Lead ${lead.id} remains pending after sync error:`, err);
         }
 
-        return { success: true };
+        return { success: true, leadId: lead.id, crmSynced };
       }),
 
     quickOffer: protectedProcedure
       .input(z.object({
-        category: z.enum(["insurance","energy","internet","mobile","banking","tax","legal","relocation","other"]),
+        category: z.enum(["insurance","energy","internet","mobile","banking","tax","legal","documents","relocation","other"]),
         details: z.string().max(2000).optional(),
         urgency: z.enum(["sofort","diese_woche","diesen_monat","kein_eile"]).default("diesen_monat"),
       }))
@@ -316,7 +335,7 @@ export const appRouter = router({
         const nameParts = (user.name ?? "Потребител").split(" ");
         const firstName = nameParts[0] ?? "Потребител";
         const lastName = nameParts.slice(1).join(" ") || "-";
-        await createLead({
+        const lead = await createLead({
           firstName,
           lastName,
           email: user.email ?? "",
@@ -330,12 +349,27 @@ export const appRouter = router({
           status: "new",
           source: "quick_offer",
         });
-        try {
-          await submitLeadToCrm({ firstName, lastName, email: user.email ?? "", phone: "", city: "", category: input.category, details: input.details, urgency: input.urgency, affiliateConsent: false });
-        } catch (err) {
-          console.error("[CRM] quickOffer sync error:", err);
+
+        if (!lead) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Ihre Anfrage konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+          });
         }
-        return { success: true };
+
+        let crmSynced = false;
+        try {
+          const crmResult = await submitLeadToCrm({ firstName, lastName, email: user.email ?? "", phone: "", city: "", category: input.category, details: input.details, urgency: input.urgency, affiliateConsent: false });
+          if (crmResult.success && crmResult.mode !== "mock") {
+            crmSynced = await updateLeadCrmSync(lead.id, crmResult.contactId, crmResult.dealId);
+          }
+          if (!crmSynced) {
+            console.error(`[CRM] Quick-offer lead ${lead.id} remains pending: ${crmResult.error ?? crmResult.mode}`);
+          }
+        } catch (err) {
+          console.error(`[CRM] Quick-offer lead ${lead.id} remains pending after sync error:`, err);
+        }
+        return { success: true, leadId: lead.id, crmSynced };
       }),
   }),
 
@@ -345,7 +379,7 @@ export const appRouter = router({
   partners: router({
     list: publicProcedure
       .input(z.object({
-        category: z.enum(["insurance", "energy", "internet", "mobile", "banking", "tax", "legal", "relocation", "other"]).optional(),
+        category: z.enum(["insurance", "energy", "internet", "mobile", "banking", "tax", "legal", "documents", "relocation", "other"]).optional(),
       }).optional())
       .query(async ({ input }) => {
         const rows = await getActivePartners(input?.category);

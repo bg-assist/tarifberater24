@@ -223,12 +223,13 @@ export async function submitLeadToCrm(payload: CrmLeadPayload): Promise<CrmResul
     }
   }
 
-  // Mode 3: Mock (development — log to console, return success)
-  console.log("[CRM MOCK] Lead received:", {
-    name: `${payload.firstName} ${payload.lastName}`,
-    email: payload.email,
-    category: payload.category,
-    urgency: payload.urgency,
-  });
-  return { success: true, mode: "mock" };
+  // Mode 3: Development-only mock. Production must never report a fake CRM success.
+  if (process.env.NODE_ENV !== "production") {
+    console.warn("[CRM MOCK] HubSpot is not configured; lead remains pending in the database");
+    return { success: true, mode: "mock" };
+  }
+
+  const error = "HubSpot is not configured";
+  console.error(`[CRM] ${error}; lead remains pending in the database`);
+  return { success: false, error, mode: "mock" };
 }
