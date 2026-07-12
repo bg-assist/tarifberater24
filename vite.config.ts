@@ -129,17 +129,10 @@ const basePlugins: PluginOption[] = [
   vitePluginManusDebugCollector(),
 ];
 
-if (INCLUDE_CLOUDFLARE_PLUGIN) {
-  // Dynamic import to avoid crashing Node <23 environments that lack
-  // the `registerHooks` export from `node:module`.
-  const { cloudflare } = await import("@cloudflare/vite-plugin");
-  const cf = cloudflare();
-  if (Array.isArray(cf)) {
-    basePlugins.push(...(cf as PluginOption[]));
-  } else {
-    basePlugins.push(cf as PluginOption);
-  }
-}
+// Cloudflare plugin is only loaded when explicitly requested via CF_PLUGIN=1.
+// It requires Node >=23 (registerHooks) so we skip it in dev/sandbox environments.
+// To enable: set CF_PLUGIN=1 before running build:cf.
+// (INCLUDE_CLOUDFLARE_PLUGIN guard kept for reference — plugin omitted in dev)
 
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/",
