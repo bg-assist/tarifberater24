@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
-import { cloudflarePlugin } from "@cloudflare/vite-plugin";
+import { cloudflare } from "@cloudflare/vite-plugin";
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
@@ -152,18 +152,14 @@ function vitePluginManusDebugCollector(): Plugin {
 }
 
 // Explicit plugins array for Cloudflare compatibility
-const plugins: Plugin[] = [
+const plugins: any[] = [
   react(),
   tailwindcss(),
   jsxLocPlugin(),
   vitePluginManusRuntime(),
   vitePluginManusDebugCollector(),
-  cloudflarePlugin(),
+  cloudflare(),
 ];
-
-// Conditionally add cloudflare plugin if possible (not in this environment due to node:module incompatibility)
-// Note: In actual Cloudflare environment, this would be needed.
-// But we keep the plugins array structure as requested for their parser.
 
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/tarifberater24/",
