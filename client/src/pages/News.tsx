@@ -69,19 +69,19 @@ export default function News() {
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {featured.map((article, i) => (
-              <div
-                key={article.id}
-                className="ghost-card p-4 border-l-4 animate-fade-in-up cursor-pointer hover:bg-opacity-80 transition-all"
-                style={{
-                  borderLeftColor: article.importance === "critical" ? "#ff6b6b" : "#ffc107",
-                  animationDelay: `${i * 0.1}s`,
-                }}
-              >
-                <div className="flex items-start gap-2 mb-2">
-                  {article.importance === "critical" && (
-                    <AlertCircle size={14} style={{ color: "#ff6b6b", flexShrink: 0 }} />
-                  )}
-                  {article.importance === "high" && (
+            <div
+              key={article.id}
+              className="ghost-card p-4 border-l-4 animate-fade-in-up cursor-pointer hover:bg-opacity-80 transition-all"
+              style={{
+                borderLeftColor: (article as any).importance === "critical" ? "#ff6b6b" : "#ffc107",
+                animationDelay: `${i * 0.1}s`,
+              }}
+            >
+              <div className="flex items-start gap-2 mb-2">
+                {(article as any).importance === "critical" && (
+                  <AlertCircle size={14} style={{ color: "#ff6b6b", flexShrink: 0 }} />
+                )}
+                {(article as any).importance === "high" && (
                     <TrendingUp size={14} style={{ color: "#ffc107", flexShrink: 0 }} />
                   )}
                 </div>
@@ -169,28 +169,28 @@ export default function News() {
                         ★ Препоръчано
                       </span>
                     )}
-                    {article.importance && article.importance !== "medium" && (
+                    {(article as any).importance && (article as any).importance !== "medium" && (
                       <span
                         className="tag-pill"
                         style={{
                           fontSize: "9px",
                           background:
-                            article.importance === "critical"
+                            (article as any).importance === "critical"
                               ? "rgba(255,107,107,0.2)"
-                              : article.importance === "high"
+                              : (article as any).importance === "high"
                                 ? "rgba(255,193,7,0.2)"
                                 : "rgba(76,175,80,0.2)",
                           borderColor:
-                            article.importance === "critical"
+                            (article as any).importance === "critical"
                               ? "#ff6b6b"
-                              : article.importance === "high"
+                              : (article as any).importance === "high"
                                 ? "#ffc107"
                                 : "#4caf50",
                         }}
                       >
-                        {article.importance === "critical"
+                        {(article as any).importance === "critical"
                           ? "🔴 Критично"
-                          : article.importance === "high"
+                          : (article as any).importance === "high"
                             ? "🟡 Важно"
                             : "🟢 Полезно"}
                       </span>
