@@ -120,16 +120,29 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
+const INCLUDE_CLOUDFLARE_PLUGIN = process.env.CF_PLUGIN === "1" || process.env.INCLUDE_CLOUDFLARE === "1";
+
+const basePlugins: Plugin[] = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  vitePluginManusRuntime(),
+  vitePluginManusDebugCollector(),
+];
+
+if (INCLUDE_CLOUDFLARE_PLUGIN) {
+  // cloudflare() can return a plugin or an array of plugins; normalize to array
+  const cf = cloudflare();
+  if (Array.isArray(cf)) {
+    basePlugins.push(...(cf as Plugin[]));
+  } else {
+    basePlugins.push(cf as Plugin);
+  }
+}
+
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/tarifberater24/",
-  plugins: [
-    react(),
-    tailwindcss(),
-    jsxLocPlugin(),
-    vitePluginManusRuntime(),
-    vitePluginManusDebugCollector(),
-    ...cloudflare(),
-  ],
+  plugins: basePlugins,
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
