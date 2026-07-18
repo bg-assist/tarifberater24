@@ -3,6 +3,7 @@ const bg = {
   nav: {
     home: "Начало",
     services: "Услуги",
+    paid_services: "Помощ с документи",
     hausbesitzer: "Портал на собственици",
     partner: "Партньори",
     assistant: "Асистент",
@@ -310,9 +311,29 @@ const bg = {
     per_year: "/ година",
     current: "Актуално",
     featured: "Препоръчано",
-    category: "Категория",
+        category: "Категория",
     all: "Всички",
   },
+  // Paid Services
+  paidServices: {
+    title: "Помощ с документи и институции",
+    subtitle: "Професионална помощ за административни процеси",
+    jobcenter: "Jobcenter Заявка",
+    finanzamt: "Finanzamt Помощ",
+    zulassung: "Zulassung Място",
+    authorities: "Администрация Консултация",
+    documents: "Документ Помощ",
+    legal: "Правни Въпроси",
+    quick: "Бързо",
+    reliable: "Надежно",
+    bulgarian: "На български",
+    howItWorks: "Как работи",
+    step1: "Изберете услугата",
+    step2: "Попълнете формата",
+    step3: "Платете",
+    step4: "Получете помощ",
+    needHelp: "Нужна ви е помощ?",
+    startNow: "Начни сега",
+  },
 } as const;
-
 export default bg;

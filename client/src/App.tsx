@@ -28,6 +28,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import HausbesitzerPortal from "./pages/HausbesitzerPortal";
+import PaidServices from "./pages/PaidServices";
 
 // ─── Email verification ───────────────────────────────────────────────────────
 import VerifyEmail from "./pages/VerifyEmail";
@@ -90,6 +91,7 @@ function AppRoutes() {
       <Route path="/get-offer"  component={() => <FullLayout><GetOffer /></FullLayout>} />
       <Route path="/angebot"    component={() => <Angebot />} />
       <Route path="/hausbesitzer" component={() => <FullLayout><HausbesitzerPortal /></FullLayout>} />
+      <Route path="/paid-services" component={() => <FullLayout><PaidServices /></FullLayout>} />
       <Route path="/partners"   component={() => <FullLayout><Partners /></FullLayout>} />
       <Route path="/about"      component={() => <FullLayout><About /></FullLayout>} />
       <Route path="/faq"        component={() => <FullLayout><FAQ /></FullLayout>} />

@@ -3,6 +3,7 @@ const de = {
   nav: {
     home: "Startseite",
     services: "Leistungen",
+    paid_services: "Dokumentenhilfe",
     hausbesitzer: "Hausbesitzer Portal",
     partner: "Partner",
     assistant: "Assistent",
@@ -121,6 +122,7 @@ const de = {
   footer: {
     tagline: "Ihr digitaler Assistent in Deutschland",
     services: "Leistungen",
+    paid_services: "Dokumentenhilfe",
     company: "Unternehmen",
     legal: "Rechtliches",
     impressum: "Impressum",
@@ -316,3 +318,4 @@ const de = {
 } as const;
 
 export default de;
+// Placeholder - will be replaced
